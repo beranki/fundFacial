@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% block title %}User Info{%endblock%}
+
+{% block content %}
+<body>
+    <h1 class="dark-title-page" style="font-size: 30px">{{ user.username }}'s Account Details</h1>
+    <p class = "dark-title-page" style="font-size:20px">Current Balance: ${{ user.balance }} <br>
+                                                        Email: {{ user.email }} <br>
+    </p>
+    
+    </div>
+</body>
+
+{% endblock %}

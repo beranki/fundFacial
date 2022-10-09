@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block title %}Model Training{% endblock %}
+<head>
+    <meta http-equiv="refresh" content="300">
+</head>
+{% block nav %} 
+    <header>
+        <nav>
+        <a class="cta" href="/logout"><button>Logout</button></a>
+        </nav>
+    </header>
+
+{% endblock %}
+
+{% block content %}
+    <div class = "row">
+        <div class = "column">
+            <h1 class="dark-title-page" style="font-size:large">Please wait for the model for the train.</h1>
+            <p class = "dark-title-page">
+                The model will take more than 8 hours to train! - <strong>LEAVE THIS TAB OPEN DURING THE TRAINING PROCESS.</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class = "row" >
+        <div class = "column center">
+            <form action="" method="post">
+                <button name="foo" value="start_model">Start Training Model</button>
+            </form>
+        </div>
+    </div>
+
+    <!--<div class = "row">
+        <div class="column center progress">
+            <div class="progress-done" data-done="{{ current_epoch }}">
+                {{current_epoch}} /50
+            </div>
+        </div>
+    <div>-->
+{% endblock %}

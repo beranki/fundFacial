@@ -1,0 +1,69 @@
+{% extends "base.html" %} {%block title%}User Menu{%endblock%}
+
+{% block content %}
+<body>
+    <h1 class="dark-title-page" style="font-size: xx-large;">Transactions</h1>
+    <div class = "row">
+        <div class = "column">
+            <table style="margin-right: 70px;">
+                <caption><h1 style="font-size: x-large;">Incoming</h1></caption>
+
+                {% for i in incoming_data %}
+                <form method="POST">
+                    <tr>
+                        <td><button name="incoming_accept_{{ i[1].id }}" type="submit button" class="btn btn-success" style="height:120px; width:40px; font-size:large">&#10003;</button></td>
+                        <td class = "colColor">
+                            <h1 name="data" style="background-color: transparent; margin: 30px; ">
+                                                From: {{ i[0].username }}
+                                                <br>Amount: ${{ i[1].amount }}
+                                                {% if i[1].status == "request" %}
+                                                    <br>Request 
+                                                {% elif i[1].status == "gift" %}
+                                                    <br>Gift
+                                                {% endif %}
+                            </h1>
+                        </td>
+
+                        <td><button name="incoming_deny_{{ i[1].id }}" type="submit button" class="btn btn-danger" style="height:120px; width:40px; font-size:xx-large">&times;</button></td>
+                    </tr>
+                </form>
+                {% endfor %}
+            </table>
+        </div>
+
+        
+        <div class="column">
+            <table>
+                <caption><h1 style="font-size: x-large;">Outgoing</h1></caption>
+                {% for i in outgoing_data %}
+                <form method="POST">
+                    <tr>
+                        <td class = "colColor">
+                            <h1 style="background-color: transparent; margin: 30px; ">
+                                                To: {{ i[0].username }}
+                                                <br>Amount: ${{ i[1].amount }}
+                                                {% if i[1].status == "request" %}
+                                                    <br>Request 
+                                                {% elif i[1].status == "gift" %}
+                                                    <br>Gift
+                                                {% endif %}
+                            </h1>
+                        </td>
+
+                        <td><button name="outgoing_deny_{{ i[1].id }}" type="submit button" class="btn btn-danger" style="height:125px; width:40px; font-size:xx-large">&times;</button></td>
+                    </tr>
+                </form>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+    <div>
+        <a class = "cta" href="\transaction"><button class="center">Make a Transaction</button></a>
+        <a class = "cta" href="\user-info"><button class="center" style = "top: 60%;">View User Info</button></a>
+    </div>
+</body>
+{% endblock %}
+
+
+{%block flashes%}{%endblock%}

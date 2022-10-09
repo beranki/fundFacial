@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block title %}Verify Request{% endblock %}
+
+{% block content %}
+<body>
+    <h1 class="dark-title-page">Verify Request</h1>
+        <div class = "row">
+            <div class = "column">
+                <img style="padding: 50px; width: 700px; height: auto" src="{{url_for('views.video_feed')}}">
+            </div>
+
+            <div class = "column" style="text-align: center; padding:5%">
+                <h1><br><strong>This is the camera feed that registers your biometric data.</strong> <br><br> Make sure you follow these steps:</h1>
+                <ul>
+                    <li>Make sure there is only ONE recognizable face in frame so that it doesn't pollute the data.</li>
+                    <li>When you're ready, click the "Take photo" button and it'll be verified!</li>
+                </ul>
+                <form method="POST" action = "{{ url_for('views.verify_tasks') }}">
+                    <input style = "padding: 30px; border-color: #493a66; border-radius: 10%;" type="submit" value = "" name = "proceed"/>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+    
+</body>
+{% endblock %}

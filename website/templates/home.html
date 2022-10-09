@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block title %} Home {% endblock %}
+{% block content %} 
+<div>
+    <figure class="center flex-container">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="FundFacial Logo" width = auto height="500" style="margin-top: 20%;">
+        <h3 style="text-align:center; color: #edf0f1"><a style="font-size: 20px" >Your money. Your face.</a></h3>
+    </figure>
+</div>
+{% endblock %}

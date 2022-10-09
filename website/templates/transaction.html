@@ -1,0 +1,53 @@
+{% extends "base.html" %} {%block title%}Transaction{%endblock%}
+
+{% block content %}
+
+<body>
+    <form method="POST">
+        <h1 class="dark-title-page" style="font-size: xx-large;">Make a Transaction</h1>
+            <div class="form-group" style="width: 50%; margin: auto; padding: 10px">
+                <label style="align-self: center;" for="amount">Amount</label>
+                <input
+                    type="number"
+                    step = "0.01"
+                    min="0.0"
+                    max="{{ current_user.balance }}"
+                    class="form-control"
+                    id="amount"
+                    name="amount"
+                    placeholder="Enter amount"
+                />
+        
+                <label style="align-self: center;" for="other_user">Email of User to Request</label>
+                    <input
+                        type="other_user" 
+                        class="form-control"
+                        id="other_user"
+                        name="other_user"
+                        placeholder="Enter other user email"
+                    />
+            
+                <label style="align-self: center;" for="status">Status</label>
+                    <select
+                        type="status"
+                        name="status" 
+                        class="form-control select"
+                        id="status"
+                    >
+                        <option value="request">Request</option>
+                        <option value="gift">Gift</option>
+                    </select>
+
+            </div>
+
+
+            <div class = "container">
+                <div class = "center">
+                    <button class = "cta">Submit</button>
+                </div>
+            </div>
+            
+    </form>
+</body>
+
+{% endblock %}

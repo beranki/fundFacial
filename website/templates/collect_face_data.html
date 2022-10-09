@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block title %}Collect Face Data{% endblock %}
+
+{% block content %}
+<body>
+    <h1 class="dark-title-page">Step 2: Camera Feed</h1>
+        <div class = "row">
+            <div class = "column">
+                <img style="padding: 50px; width: 700px; height: auto" src="{{url_for('views.video_feed')}}">
+            </div>
+
+            <div class = "column" style="text-align: center; padding:5%">
+                <form method="POST" action = "{{ url_for('views.tasks') }}">
+                    <input style = "padding: 30px; border-color: #493a66; border-radius: 10%;" type="submit" value = "Start/Stop Recording" name = "stop"/>
+                </form>
+                <h1><br><strong>This is the camera feed that registers your biometric data.</strong> <br><br> Make sure you follow these steps:</h1>
+                <ul>
+                    <li>Make sure there is only ONE recognizable face in frame so that it doesn't pollute the data.</li>
+                    <li>Try doing different poses and moving your face around in different ways during this stage - <br>
+                        this is important so the data has different distributions.</li>
+                    <li>As well as these two steps, refer to the bounding box on the camera feed and confidence percentage
+                        to correspondingly adjust the lighting or position for ideal conditions.</li>
+                    <li>When you pause the video stream, it no longer registers photos. As a helpful indicator, doing so will 
+                        temporarily remove the camera feed from the webpage until you unpause it.</li>
+                    <br><li><strong>However, after a certain period of time, the camera feed will pause meaning the needed samples have been
+                        reached. At this point, proceed to the user menu. You have fully completed the registration!</strong>
+                    </li>
+                </ul>
+                <form method="POST" action = "{{ url_for('views.tasks') }}">
+                    <input style = "padding: 30px; border-color: #493a66; border-radius: 10%;" type="submit" value = "Proceed to User Menu" name = "proceed"/>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+    
+</body>
+{% endblock %}
