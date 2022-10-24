@@ -6,84 +6,61 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-#from recog_assets import *
 """
-def run_model(name, train_data):
-    lr = 1e-4
-    epochs = 50
-
-    run(train_data, epochs, lr, name, save_model=True)
-
-def load_model(name):
-    model = keras.models.load_model("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\models\\face_recog_" + name + ".h5", 
-                                    custom_objects = {'L1Dist':L1Dist, 'BinaryCrossentropy':tf.losses.BinaryCrossentropy})
-    return model
-
-def verify(model, name):
-    results = []
-    input_img = preprocess("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\input_imgs\\" + "\\" + name + "\\" + f"input_img_{name}.jpg")
-    for img in os.listdir("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\verif_imgs\\" + name):
-        valid_img = preprocess("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\verif_imgs\\" + name + "\\" + img)
-        result = model.predict(list(np.expand_dims([valid_img, input_img], axis = 1)))
-        results.append(result)
-
-    detection = 0
-    for result in results:
-        if (result > 0.5): detection+=1
-    
-    return detection/len(results) > 0.5
-
-from register.register import detect_face
-
-def verify_current_image(model):
-    cap = cv2.VideoCapture(0)
-
-    ret, prev = cap.read()
-    dnn_model = cv2.dnn.readNetFromCaffe("C:/Users/anjan/Documents/messingaroundDL/cheekypeeky/caffeModel/deploy.prototxt.txt", 
-    "C:/Users/anjan/Documents/messingaroundDL/cheekypeeky/caffeModel/res10_300x300_ssd_iter_140000.caffemodel")
-    cf = 0
-
-    while True:
-        _, frame = cap.read()
-
-        blob1 = cv2.dnn.blobFromImage(cv2.resize(prev, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
-        dnn_model.setInput(blob1)
-        detections = dnn_model.forward() 
-
-        sX, sY, eX, eY, frame, cf = detect_face(prev, frame, detections, cf)
-        if (sX != -1):
-            cf = 0
-            croppedimg = frame[sY:eY, sX:eX]
-            croppedimg = cv2.resize(croppedimg, (105, 105))
-            cv2.imwrite("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\input_imgs\\" + name + "\\input_img_"+ name + ".jpg", croppedimg)    
-
-        cv2.imshow("Frame", frame)
-
-        prev = frame
-        frame = cap.read()
-
-        if cv2.waitKey(1) & 0xFF == ord('q'): 
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-
-    verified = verify(model, name)
-    if (verified): print(f"Successfully recognized. Hello {name}!")
-    else: print(f"Not recognized. ")
-#=================================================================================================
-
-name = input("What is your name? ") #- temporary!! please remove when integrating with flask
-if name not in os.listdir("C:\\Users\\anjan\Documents\\messingaroundDL\\cheekypeeky\\recog\\recog_assets\\imgs\\anchor_imgs"):
-    print("Not valid user")
-    exit()
-
-train_data, test_data = init_datasets(name)
-train_data, test_data = train_data.shuffle(len(list(train_data))), test_data.shuffle(len(list(test_data)))
-
-if (os.path.exists("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\models\\face_recog_" + name + ".h5") is False): 
-    run_model("Bhargav", train_data=train_data)
-else:
-    model = load_model(name)
-    verify_current_image(model)
+Model: "siam_network"
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to
+==================================================================================================
+input_img (InputLayer)          [(None, 105, 105, 3) 0
+__________________________________________________________________________________________________
+valid_img (InputLayer)          [(None, 105, 105, 3) 0
+__________________________________________________________________________________________________
+conv2d (Conv2D)                 (None, 96, 96, 64)   19264       input_img[0][0]
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, 96, 96, 64)   19264       valid_img[0][0]
+__________________________________________________________________________________________________
+max_pooling2d (MaxPooling2D)    (None, 48, 48, 64)   0           conv2d[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_3 (MaxPooling2D)  (None, 48, 48, 64)   0           conv2d_4[0][0]
+__________________________________________________________________________________________________
+conv2d_1 (Conv2D)               (None, 42, 42, 128)  401536      max_pooling2d[0][0]
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, 42, 42, 128)  401536      max_pooling2d_3[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_1 (MaxPooling2D)  (None, 21, 21, 128)  0           conv2d_1[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_4 (MaxPooling2D)  (None, 21, 21, 128)  0           conv2d_5[0][0]
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, 18, 18, 128)  262272      max_pooling2d_1[0][0]
+__________________________________________________________________________________________________
+conv2d_6 (Conv2D)               (None, 18, 18, 128)  262272      max_pooling2d_4[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_2 (MaxPooling2D)  (None, 9, 9, 128)    0           conv2d_2[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_5 (MaxPooling2D)  (None, 9, 9, 128)    0           conv2d_6[0][0]
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, 6, 6, 256)    524544      max_pooling2d_2[0][0]
+__________________________________________________________________________________________________
+conv2d_7 (Conv2D)               (None, 6, 6, 256)    524544      max_pooling2d_5[0][0]
+__________________________________________________________________________________________________
+flatten (Flatten)               (None, 9216)         0           conv2d_3[0][0]
+__________________________________________________________________________________________________
+flatten_1 (Flatten)             (None, 9216)         0           conv2d_7[0][0]
+__________________________________________________________________________________________________
+dense (Dense)                   (None, 4096)         37752832    flatten[0][0]
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 4096)         37752832    flatten_1[0][0]
+__________________________________________________________________________________________________
+tf.math.subtract (TFOpLambda)   (None, 4096)         0           dense[0][0]
+                                                                 dense_1[0][0]
+__________________________________________________________________________________________________
+tf.math.abs (TFOpLambda)        (None, 4096)         0           tf.math.subtract[0][0]
+__________________________________________________________________________________________________
+dense_2 (Dense)                 (None, 1)            4097        tf.math.abs[0][0]
+==================================================================================================
+Total params: 77,924,993
+Trainable params: 77,924,993
+Non-trainable params: 0
+__________________________________________________________________________________________________
+None
 """

@@ -1,4 +1,5 @@
 from ast import Str
+from json import load
 import multiprocessing
 import cv2, os, random
 import numpy as np
@@ -16,13 +17,13 @@ from flask import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User, Transaction
-import requests
 from website.models import db
 warnings.filterwarnings("ignore")
 
 b_views = Blueprint("views", __name__)
 current_frame = None
-
+selected_transaction = None
+stop_verif_cam = False
 
 @b_views.route("/")
 def home():
@@ -100,7 +101,6 @@ caffe_model = cv2.dnn.readNetFromCaffe(
 cf = 0
 counter = 0
 
-path = "C:/Users/anjan/Documents/messingaroundDL/cheekypeeky/"
 anchor_pac = "recog/recog_assets/imgs/anchor_imgs/"
 positive_pac = "recog/recog_assets/imgs/positive_imgs/"
 verif_pac = "recog/verif_imgs/"
@@ -157,9 +157,9 @@ def detect_face(prev_frame, frame, dets, cfincrement):
                 (0, 0, 255),
                 2,
             )
-            return [sX, sY, eX, eY, frame, flow_frame, cfincrement]
+            return [sX, sY, eX, eY, frame, cfincrement]
         else:
-            return [-1, -1, -1, -1, frame, flow_frame, cfincrement]
+            return [-1, -1, -1, -1, frame, cfincrement]
 
 
 def create_user_paths(name):
@@ -216,7 +216,7 @@ def take_user_images(image_paths):
             caffe_model.forward()
         )  # detections should have shape [batch size, width, height, channels]
 
-        sX, sY, eX, eY, frame, flow_frame, cf = detect_face(prev, frame, detections, cf)
+        sX, sY, eX, eY, frame, cf = detect_face(prev, frame, detections, cf)
         if toggle:
             if sX != -1:
                 counter += 1
@@ -260,25 +260,76 @@ def take_user_images(image_paths):
     cap.release()
     cv2.destroyAllWindows()
 
+def run_model(name, train_data):
+    lr = 1e-4
+    epochs = 50
 
-def flow_frame_gen():
-    global flow_frame
+    run(train_data, epochs, lr, name, save_model=True)
+
+def load_model(name):
+    model = tf.keras.models.load_model("recog\\models\\face_recog_" + name + ".h5", 
+                                    custom_objects = {'L1Dist':L1Dist, 'BinaryCrossentropy':tf.losses.BinaryCrossentropy})
+    return model
+
+def verify(model, name):
+    results = []
+    input_img = preprocess("recog\\input_imgs\\" + name + "\\" + f"input_img_{name}.jpg")
+    for img in os.listdir("recog\\verif_imgs\\" + name):
+        valid_img = preprocess("recog\\verif_imgs\\" + name + "\\" + img)
+        result = model.predict(list(np.expand_dims([input_img, valid_img], axis = 1)))
+        results.append(result)
+
+    detection = 0
+    for result in results:
+        print(result)
+        if (result > 0.5): detection+=1
+
+    print(detection/len(results))
+
+    return detection/len(results) > 0.5
+
+def verify_current_image(user_id):
+    global stop_verif_cam, cap, caffe_model
+
+    ret, prev = cap.read()
+    cf = 0
+
+    if (os.path.exists(f"recog\\input_imgs\\{user_id}") is False):
+        os.mkdir(f"recog\\input_imgs\\{user_id}")
 
     while True:
-        if flow_frame is None:
-            continue
-            
-        flag, encoded_flow = cv2.imencode(".jpg", flow_frame)
-        if not flag:
-            continue
+        _, frame = cap.read()
 
-        encoded_bytes_flow = encoded_flow.tobytes()
+        blob1 = cv2.dnn.blobFromImage(cv2.resize(prev, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+        caffe_model.setInput(blob1)
+        detections = caffe_model.forward() 
 
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-			encoded_bytes_flow + b'\r\n')
+        sX, sY, eX, eY, frame, cf = detect_face(prev, frame, detections, cf)
+        if (sX != -1):
+            cf = 0
+            croppedimg = frame[sY:eY, sX:eX]
+            croppedimg = cv2.resize(croppedimg, (105, 105))
+            cv2.imwrite("recog\\input_imgs\\" + str(user_id) +"\\input_img_"+ str(user_id) + ".jpg", croppedimg)    
+
+            flag1, encoded_img = cv2.imencode(".jpg", frame)
+            if not flag1:
+                continue
+            encoded_bytes_img = encoded_img.tobytes()
+            yield (
+                b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n" + encoded_bytes_img + b"\r\n"
+            )
+
+        prev = frame
+        frame = cap.read()
+
+        if cv2.waitKey(1) and stop_verif_cam is True: 
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
 
 
-# ===============================================================================
 
 import tensorflow as tf
 import os
@@ -483,65 +534,6 @@ def run(train_data, epochs, lr, name, save_model=True):
 
     return loss
 
-"""
-Model: "siam_network"
-__________________________________________________________________________________________________
-Layer (type)                    Output Shape         Param #     Connected to
-==================================================================================================
-input_img (InputLayer)          [(None, 105, 105, 3) 0
-__________________________________________________________________________________________________
-valid_img (InputLayer)          [(None, 105, 105, 3) 0
-__________________________________________________________________________________________________
-conv2d (Conv2D)                 (None, 96, 96, 64)   19264       input_img[0][0]
-__________________________________________________________________________________________________
-conv2d_4 (Conv2D)               (None, 96, 96, 64)   19264       valid_img[0][0]
-__________________________________________________________________________________________________
-max_pooling2d (MaxPooling2D)    (None, 48, 48, 64)   0           conv2d[0][0]
-__________________________________________________________________________________________________
-max_pooling2d_3 (MaxPooling2D)  (None, 48, 48, 64)   0           conv2d_4[0][0]
-__________________________________________________________________________________________________
-conv2d_1 (Conv2D)               (None, 42, 42, 128)  401536      max_pooling2d[0][0]
-__________________________________________________________________________________________________
-conv2d_5 (Conv2D)               (None, 42, 42, 128)  401536      max_pooling2d_3[0][0]
-__________________________________________________________________________________________________
-max_pooling2d_1 (MaxPooling2D)  (None, 21, 21, 128)  0           conv2d_1[0][0]
-__________________________________________________________________________________________________
-max_pooling2d_4 (MaxPooling2D)  (None, 21, 21, 128)  0           conv2d_5[0][0]
-__________________________________________________________________________________________________
-conv2d_2 (Conv2D)               (None, 18, 18, 128)  262272      max_pooling2d_1[0][0]
-__________________________________________________________________________________________________
-conv2d_6 (Conv2D)               (None, 18, 18, 128)  262272      max_pooling2d_4[0][0]
-__________________________________________________________________________________________________
-max_pooling2d_2 (MaxPooling2D)  (None, 9, 9, 128)    0           conv2d_2[0][0]
-__________________________________________________________________________________________________
-max_pooling2d_5 (MaxPooling2D)  (None, 9, 9, 128)    0           conv2d_6[0][0]
-__________________________________________________________________________________________________
-conv2d_3 (Conv2D)               (None, 6, 6, 256)    524544      max_pooling2d_2[0][0]
-__________________________________________________________________________________________________
-conv2d_7 (Conv2D)               (None, 6, 6, 256)    524544      max_pooling2d_5[0][0]
-__________________________________________________________________________________________________
-flatten (Flatten)               (None, 9216)         0           conv2d_3[0][0]
-__________________________________________________________________________________________________
-flatten_1 (Flatten)             (None, 9216)         0           conv2d_7[0][0]
-__________________________________________________________________________________________________
-dense (Dense)                   (None, 4096)         37752832    flatten[0][0]
-__________________________________________________________________________________________________
-dense_1 (Dense)                 (None, 4096)         37752832    flatten_1[0][0]
-__________________________________________________________________________________________________
-tf.math.subtract (TFOpLambda)   (None, 4096)         0           dense[0][0]
-                                                                 dense_1[0][0]
-__________________________________________________________________________________________________
-tf.math.abs (TFOpLambda)        (None, 4096)         0           tf.math.subtract[0][0]
-__________________________________________________________________________________________________
-dense_2 (Dense)                 (None, 1)            4097        tf.math.abs[0][0]
-==================================================================================================
-Total params: 77,924,993
-Trainable params: 77,924,993
-Non-trainable params: 0
-__________________________________________________________________________________________________
-None
-"""
-
 # ===============================================================================
 from multiprocessing import Process
 
@@ -559,9 +551,11 @@ def video_feed():
         positive_pac + str(current_user.id),
         verif_pac + str(current_user.id),
     ]
-    return Response(
-        take_user_images(paths), mimetype="multipart/x-mixed-replace; boundary=frame"
-    )
+    return Response(take_user_images(paths), mimetype="multipart/x-mixed-replace; boundary=frame")
+
+@b_views.route("/video_feed_2")
+def video_feed_2():
+    return Response(verify_current_image(str(current_user.id)), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 def run_model(name, train_data):
     lr = 1e-4
@@ -579,7 +573,6 @@ def task(user_id):
     print("\n\n")
     run_model(user_id, train_data=train_data)
 
-
 toggle = True
 p = None
 
@@ -592,7 +585,7 @@ def verify_tasks():
             print(toggle)
         if request.form.get("proceed") == "Proceed to User Menu" and counter >= 250:
             if (
-                os.path.exists("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\models\\"
+                os.path.exists("recog\\models\\"
                     + str(current_user.id)
                     + "\\face_recog.h5") is False):
 
@@ -604,22 +597,39 @@ def verify_tasks():
 
 @b_views.route("/requests", methods=["GET", "POST"])
 def tasks():
-    global toggle, cap, counter, p
+    global toggle, cap, counter, p, stop_verif_cam
     if request.method == "POST":
         if request.form.get("stop") == "Start/Stop Recording":
             toggle = not toggle
             print(toggle)
+            return redirect(url_for("views.collect_face_data"))
         if request.form.get("proceed") == "Proceed to User Menu" and counter >= 250:
             if (
-                os.path.exists("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\models\\"
+                os.path.exists("recog\\models\\"
                     + str(current_user.id)
                     + "\\face_recog.h5") is False):
 
                 return redirect(url_for("views.epoch_loading"))
             # else:
             return redirect(url_for("views.user_menu"))
- 
-    return redirect(url_for("views.collect_face_data"))
+
+        if request.form.get("capture") == "Capture Input Image":
+            stop_verif_cam = True
+            print(stop_verif_cam)
+            print(selected_transaction)
+
+
+            model = load_model(str(current_user.id))
+            verified = verify(model, str(current_user.id))
+            if (verified): 
+                print(f"Transaction successfully verified.")
+                db.session.delete(selected_transaction)
+                db.session.commit()
+            else: 
+                print("Not recognized.")
+
+            return redirect(url_for("views.user_menu"))
+
 
 post_reqs = 0
 
@@ -628,9 +638,7 @@ import time
 @b_views.route("/track")
 def track(user_id):
     start_time = time.time()
-    while (os.path.exists("C:\\Users\\anjan\\Documents\\messingaroundDL\\cheekypeeky\\recog\\models\\"
-            + str(user_id)
-            + "\\face_recog.h5") is False):
+    while (os.path.exists("recog\\models\\" + str(user_id)+ "\\face_recog.h5") is False):
         #print("passing..." + str(time.time() - start_time))
         pass
 
@@ -678,17 +686,20 @@ def logout():
     flash("Logged out of account.", category="success")
     return redirect(url_for("views.home"))
 
+from flask import get_flashed_messages
+
 @b_views.route("/user_menu", methods=["POST", "GET"])
 @login_required
 def user_menu():
-    global p 
+    get_flashed_messages()
+    global p, selected_transaction
     if request.method == "POST":
         print(p)
         if (os.path.exists(
                 f"recog\\models\\face_recog_{current_user.id}.h5") is False):
             if (p is not None):
                 if (p.is_alive()):
-                    flash("Biometric model still training.")
+                    flash("Biometric model still training.", category="error")
                 else: 
                     p = None
                     print("reached1")
@@ -707,22 +718,11 @@ def user_menu():
             print(button_pressed)
             if button_pressed.__contains__("accept"):
                 print("a")
-                return redirect(
-                    url_for(
-                        "views.verify_request",
-                        transaction=selected_transaction,
-                        status="accept",
-                    )
-                )
+                return redirect(url_for("views.verify_request"))
+
             if button_pressed.__contains__("deny"):
                 print("d")
-                return redirect(
-                    url_for(
-                        "views.verify_request",
-                        transaction=selected_transaction,
-                        status="deny",
-                    )
-                )
+                return redirect(url_for("views.verify_request"))
 
     incoming_transactions = list(
         db.session.query(Transaction).filter(Transaction.to_id == current_user.id)
@@ -753,15 +753,17 @@ def user_menu():
     )
 
 
-@b_views.route("/verify_request/<transaction>/<status>", methods=["GET", "POST"])
+@b_views.route("/verify_request", methods=["GET", "POST"])
 @login_required
-def verify_request(transaction, status):
-    if request.method == "POST":
-        pass
+def verify_request():
+    global selected_transaction
+    if (selected_transaction is None):
+        flash("Didn't properly select a transaction.", category="error")
+        return redirect(url_for("views.user_menu"))
 
-    return render_template(
-        "verify_request.html", transaction=transaction, status=status, user=current_user
-    )
+    print(selected_transaction)
+    return render_template("verify_request.html", user=current_user)
+        
 
 
 @b_views.route("/transaction", methods=["GET", "POST"])
@@ -806,4 +808,3 @@ def transaction():
 @login_required
 def user_info():
     return render_template("user_info.html", user=current_user)
-
