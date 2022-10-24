@@ -29,4 +29,6 @@ Once that's done, you'll be forwarded to the user menu, right? No...you'll inste
 
 At this point, when it finishes, it'll forward you to the user menu, which will give you your list of incoming and outgoing transactions. If you would like to, set up another test account and send transactions to that test account, and have that test account send some to you! It's kind of fun...maybe...not really.
 
+If you already did this process and have your account, you can just press the login info, put in your basic information (no biometrics needed for simple auth), and then you're good to go!
+
 The idea of this program is to be a proof of concept of a user oriented biometrics security platform, and while it definitely could use a LOT of improvement, it stands as a good living example of what I had envisioned at the beginning of the project.
