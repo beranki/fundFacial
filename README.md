@@ -1,5 +1,4 @@
 # fundFacial
-a user-oriented biometric transaction platform using Flask and custom trained siamese model
 ![image](https://user-images.githubusercontent.com/77950550/197428516-190b99f0-c579-444e-b25d-dace67f82509.png)
 
 This project is filled with bugs and inefficient code, but should be used as a marker for my journey into web development. 
