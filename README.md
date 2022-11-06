@@ -36,7 +36,6 @@ The idea of this program is to be a proof of concept of a user oriented biometri
 # The architecture of the Siamese Model is here:
 
 Layer (type)                    Output Shape         Param #     Connected to
-==================================================================================================
 input_img (InputLayer)          [(None, 105, 105, 3) 0
 
 valid_img (InputLayer)          [(None, 105, 105, 3) 0
@@ -79,7 +78,7 @@ dense_1 (Dense)                 (None, 4096)         37752832    flatten_1[0][0]
 
 tf.math.subtract (TFOpLambda)   (None, 4096)         0           dense[0][0]
                                                                  dense_1[0][0]
-
+                                                                 
 tf.math.abs (TFOpLambda)        (None, 4096)         0           tf.math.subtract[0][0]
 
 dense_2 (Dense)                 (None, 1)            4097        tf.math.abs[0][0]
