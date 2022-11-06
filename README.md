@@ -25,11 +25,11 @@ Download the repo, and run the main.py file. Once you have gotten to this point,
 
 If you have a pre-existing account (which you won't if this is your first time using it), click sign-up and create an account! It will prompt you for according details and then will request images of you to store in the database! This is because a biometric transaction platform needs your biometric data to ensure it's you at the time of approval of transaction. 
 
-Once that's done, you'll be forwarded to the user menu, right? No...you'll instead be forwarded to a loading screen. You'll be here a while. This is where the model is trained on the data you just gave it. It says it on the page as well, but don't shut down the program or reload the page at this point - it's a very long process to train the model and interfering with the page will result in the model halting its training. So...don't do that.
+Once that's done, you'll be forwarded to the user menu, right? No...you'll instead be forwarded to a loading screen. You'll be here a while. This is where the model is trained on the data you just gave it. It says it on the page as well, but don't shut down the program or reload the page at this point - it's a very long process to train the model and interfering with the page will result in the model halting its training. 
 
 At this point, when it finishes, it'll forward you to the user menu, which will give you your list of incoming and outgoing transactions. If you would like to, set up another test account and send transactions to that test account, and have that test account send some to you! It's kind of fun...maybe...not really.
 
-If you already did this process and have your account, you can just press the login info, put in your basic information (no biometrics needed for simple auth), and then you're good to go!
+If you already did this process and have your account, you can just press the login button on the navigation bar, put in your basic information (no biometrics needed for login auth), and then you're good to go!
 
 The idea of this program is to be a proof of concept of a user oriented biometrics security platform, and while it definitely could use a LOT of improvement, it stands as a good living example of what I had envisioned at the beginning of the project.
 
