@@ -33,7 +33,7 @@ If you already did this process and have your account, you can just press the lo
 
 The idea of this program is to be a proof of concept of a user oriented biometrics security platform, and while it definitely could use a LOT of improvement, it stands as a good living example of what I had envisioned at the beginning of the project.
 
-# The architecture of the Siamese Model is here:
+# Siamese Model Architecture:
 - implemented using the following paper: https://www.cs.cmu.edu/~rsalakhu/papers/oneshot1.pdf
 - image taken directly from paper, as was implemented identically in project itself.
 ![image](https://user-images.githubusercontent.com/77950550/200202133-c5d0b409-1b8b-4ca2-9dc8-9462c65e003e.png)
