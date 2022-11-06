@@ -35,7 +35,7 @@ The idea of this program is to be a proof of concept of a user oriented biometri
 
 # The architecture of the Siamese Model is here:
 
-Layer (type)                    Output Shape         Param #     Connected to
+Layer (type)                    Output Shape         Param #     Connected to<br>
 input_img (InputLayer)          [(None, 105, 105, 3) 0
 
 valid_img (InputLayer)          [(None, 105, 105, 3) 0
