@@ -4,7 +4,7 @@
 This project is filled with inefficient code, but should be used as a marker for my journey into web development. 
 
 ## Major Problems:
-- The code is repetitive in nature and often is slower than needs be, especially in the case of the custom trained siamese model. Instead of referring to a transfer model, for the purpose of understand better how the Siamese Model worked, I custom trained it for each user's data. This is a big mistake and something I realized would be inconvenient early on.
+- The code is repetitive in nature and often is slower than needs be, especially in the case of the custom trained siamese model. Instead of referring to a transfer model, for the purpose of better understanding how the Siamese Model worked, I custom trained it for each user's data. This is a big mistake and something I realized would be inconvenient early on.
 - Second, the data is not secure by any means. It's easily compromised and for an application centered around security, it fails to achieve that in certain aspects.
 
 ## Cool Things:
