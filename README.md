@@ -21,7 +21,7 @@ At this point, when it finishes, it'll forward you to the user menu, which will 
 
 If you already did this process and have your account, you can just press the login button on the navigation bar, put in your basic information (no biometrics needed for login auth), and then you're good to go!
 
-The idea of this program is to be a proof of concept of a user oriented biometrics security platform, and while it definitely could use a LOT of improvement, it stands as a good living example of what I had envisioned at the beginning of the project.
+The idea of this program is to be a proof of concept of a user oriented biometrics security platform, and while it definitely could use some improvement, it stands as a good living example of what I had envisioned at the beginning of the project.
 
 ## Siamese Model Architecture:
 - implemented using the following paper: https://www.cs.cmu.edu/~rsalakhu/papers/oneshot1.pdf
