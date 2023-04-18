@@ -1,7 +1,7 @@
 # fundFacial
 ![image](https://user-images.githubusercontent.com/77950550/197428516-190b99f0-c579-444e-b25d-dace67f82509.png)
 
-This project is filled with inefficient code, but should be used as a marker for my journey into web development. 
+This project should be used as a marker for my journey into web development. 
 
 ## Cool Things:
 - I felt I made an easy to use and innovative interface to handle the transaction requests themselves, and it was definitely a leap out of my comfort zone as I utilized schemas and other essentials to UX dev which I had not prior.
