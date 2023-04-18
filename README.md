@@ -29,7 +29,5 @@ The idea of this program is to be a proof of concept of a user oriented biometri
 ![image](https://user-images.githubusercontent.com/77950550/200202133-c5d0b409-1b8b-4ca2-9dc8-9462c65e003e.png)
 
 ## Things to Improve: 
-- Definitely switching to a transfer model for face recognition...big big mistake to custom train it per user.
 - Improve security and continue working towards making it a more user friendly app.
 - Automate a lot of the processes that require user input and confirmation! (i.e. training the model async, etc.)
-- I forgot to set up checkpoints for the model. That's an easy fix I'll implement at some point.
