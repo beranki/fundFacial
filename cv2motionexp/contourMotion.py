@@ -33,13 +33,3 @@ while True:
 
 vid.release()
 cv2.destroyAllWindows()
-
-"""
-NOTES: 2/7/22
-This is the most effective
-Have CNN that identifies face in the frame then tracks its motion w/ field instead of all motion in the frame: 
-https://www.youtube.com/watch?v=hfXMw2dQO4E
-also have timer that sends shit over after 5 seconds
-use mongoose w/ mongodb to send image w/ user password and auth key/username
-
-"""
